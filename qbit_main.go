@@ -18,14 +18,15 @@ import (
 
 func main() {
 	trigger_type := os.Args[1]
-	hash := os.Args[2]
+	config := os.Args[2]
+	hash := os.Args[3]
 
 	var available_triggers = []string{"added", "completed"}
 	if !slices.Contains(available_triggers, trigger_type) {
 		panic("Unknown trigger")
 	}
 
-	godotenv.Load()
+	godotenv.Load(config)
 
 	trigger_webhook(trigger_type, hash)
 }
