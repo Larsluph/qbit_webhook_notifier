@@ -1,0 +1,6 @@
+# Config
+.env
+
+# Build
+*.out
+*.exe
