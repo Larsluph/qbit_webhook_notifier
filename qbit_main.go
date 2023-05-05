@@ -10,6 +10,7 @@ import (
 	"net/url"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/joho/godotenv"
 	"golang.org/x/exp/slices"
@@ -31,7 +32,6 @@ func main() {
 
 func generate_added_embed(torrent_props TorrentProps) DiscordWebhookPayload {
 	payload := DiscordWebhookPayload{
-		Content: "",
 		Embeds: []Embed{
 			{
 				Title:       "New torrent added",
@@ -45,6 +45,10 @@ func generate_added_embed(torrent_props TorrentProps) DiscordWebhookPayload {
 						Inline: true,
 					},
 				},
+				Footer: Footer{
+					Text: torrent_props.Hash,
+				},
+				Datetime: time.Unix(torrent_props.AdditionDate, 0).Format(time.RFC3339),
 			},
 		},
 	}
@@ -53,7 +57,6 @@ func generate_added_embed(torrent_props TorrentProps) DiscordWebhookPayload {
 
 func generate_completed_embed(torrent_props TorrentProps) DiscordWebhookPayload {
 	payload := DiscordWebhookPayload{
-		Content: "",
 		Embeds: []Embed{
 			{
 				Title:       "Torrent completed",
@@ -77,6 +80,10 @@ func generate_completed_embed(torrent_props TorrentProps) DiscordWebhookPayload 
 						Inline: true,
 					},
 				},
+				Footer: Footer{
+					Text: torrent_props.Hash,
+				},
+				Datetime: time.Unix(torrent_props.CompletionDate, 0).Format(time.RFC3339),
 			},
 		},
 	}
@@ -102,7 +109,7 @@ func trigger_webhook(trigger_type string, hash string) {
 		Jar: cookieJar,
 	}
 
-	r_login, err := http.NewRequest("POST", authURL, body)
+	r_login, err := http.NewRequest(http.MethodPost, authURL, body)
 	if err != nil {
 		panic(err)
 	}
@@ -132,7 +139,7 @@ func trigger_webhook(trigger_type string, hash string) {
 	props_form.Set("hash", hash)
 
 	// Send the props request using the HTTP client
-	r_torrent, err := http.NewRequest("GET", fmt.Sprintf("%s?%s", propsURL, props_form.Encode()), nil)
+	r_torrent, err := http.NewRequest(http.MethodGet, fmt.Sprintf("%s?%s", propsURL, props_form.Encode()), nil)
 	if err != nil {
 		panic(err)
 	}
@@ -160,7 +167,7 @@ func trigger_webhook(trigger_type string, hash string) {
 	}
 
 	reqBodyBytes, _ := json.Marshal(payload)
-	req, _ := http.NewRequest("POST", webhookURL, bytes.NewBuffer(reqBodyBytes))
+	req, _ := http.NewRequest(http.MethodPost, webhookURL, bytes.NewBuffer(reqBodyBytes))
 	req.Header.Set("Content-Type", "application/json")
 
 	resp, err = client.Do(req)
