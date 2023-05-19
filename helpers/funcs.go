@@ -1,4 +1,4 @@
-package main
+package helpers
 
 import (
 	"fmt"
@@ -9,7 +9,7 @@ import (
 func FormatByteSize(bytes int64) string {
 	sizes := []string{"B", "KB", "MB", "GB", "TB"}
 	var i int
-	var size float64 = float64(bytes)
+	var size = float64(bytes)
 	for i = 0; size >= 1024 && i < len(sizes)-1; i++ {
 		size /= 1024
 	}

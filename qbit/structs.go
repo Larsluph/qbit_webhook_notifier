@@ -1,4 +1,4 @@
-package main
+package qbit
 
 type TorrentProps struct {
 	AdditionDate           int64   `json:"addition_date"`
@@ -40,29 +40,4 @@ type TorrentProps struct {
 	UpLimit                int64   `json:"up_limit"`
 	UpSpeed                int64   `json:"up_speed"`
 	UpSpeedAvg             int64   `json:"up_speed_avg"`
-}
-
-type Field struct {
-	Name   string `json:"name"`
-	Value  string `json:"value"`
-	Inline bool   `json:"inline"`
-}
-
-type Footer struct {
-	Text string `json:"text"`
-}
-
-type Embed struct {
-	Title       string  `json:"title"`
-	Description string  `json:"description"`
-	URL         string  `json:"url"`
-	Color       int     `json:"color"`
-	Fields      []Field `json:"fields"`
-	Footer      Footer  `json:"footer"`
-	Datetime    string  `json:"timestamp"`
-}
-
-type DiscordWebhookPayload struct {
-	Embeds  []Embed `json:"embeds"`
-	Content string  `json:"content"`
 }
