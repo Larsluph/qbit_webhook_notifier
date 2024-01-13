@@ -1,8 +1,8 @@
 module qbit_webhook
 
-go 1.20
+go 1.21
 
 require (
-	github.com/joho/godotenv v1.5.1 // indirect
-	golang.org/x/exp v0.0.0-20230425010034-47ecfdc1ba53 // indirect
+	github.com/joho/godotenv v1.5.1
+	golang.org/x/exp v0.0.0-20240112132812-db7319d0e0e3
 )
