@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/joho/godotenv"
 	"golang.org/x/exp/slices"
+	"log"
 	"os"
 	"qbit_webhook/discord"
 	"qbit_webhook/helpers"
@@ -44,10 +45,23 @@ func main() {
 
 	err := godotenv.Load(config)
 	if err != nil {
-		payload := helpers.NewErrorPayload(err)
-		fmt.Println(payload)
-		return
+		discord.SendWebhook(discord.GenerateErrorEmbed(*helpers.NewErrorPayload(err)))
 	}
+
+	log.SetFlags(log.Lshortfile | log.Ldate | log.Ltime)
+
+	file, err := os.OpenFile(os.Getenv("LOG_NAME"), os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+	defer func(file *os.File) {
+		err := file.Close()
+		if err != nil {
+			log.Fatal(err)
+		}
+	}(file)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.SetOutput(file)
 
 	discord.TriggerWebhook(triggerType, hash)
 }

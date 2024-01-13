@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"net/http/cookiejar"
 	"net/url"
@@ -111,12 +112,12 @@ func SendWebhook(payload WebhookPayload) {
 
 	resp, err := client.Do(req)
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 	defer func(Body io.ReadCloser) {
 		err := Body.Close()
 		if err != nil {
-			//TODO: Add logger when unable to send payload to Discord
+			log.Fatal(err)
 		}
 	}(resp.Body)
 }
