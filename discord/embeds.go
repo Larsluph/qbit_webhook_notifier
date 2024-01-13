@@ -7,7 +7,7 @@ import (
 )
 
 func GenerateAddedEmbed(torrentProps qbit.TorrentProps) WebhookPayload {
-	payload := WebhookPayload{
+	return WebhookPayload{
 		Embeds: []Embed{
 			{
 				Title:       "New torrent added",
@@ -28,11 +28,10 @@ func GenerateAddedEmbed(torrentProps qbit.TorrentProps) WebhookPayload {
 			},
 		},
 	}
-	return payload
 }
 
 func GenerateCompletedEmbed(torrentProps qbit.TorrentProps) WebhookPayload {
-	payload := WebhookPayload{
+	return WebhookPayload{
 		Embeds: []Embed{
 			{
 				Title:       "Torrent completed",
@@ -63,5 +62,17 @@ func GenerateCompletedEmbed(torrentProps qbit.TorrentProps) WebhookPayload {
 			},
 		},
 	}
-	return payload
+}
+
+func GenerateErrorEmbed(error helpers.ErrorPayload) WebhookPayload {
+	return WebhookPayload{
+		Content: "",
+		Embeds: []Embed{{
+			Title:       "Error Occured",
+			Description: error.Description,
+			Color:       0xCA0BE4,
+			Footer:      Footer{Text: error.CodeLocation},
+			Datetime:    time.Now().Format(time.RFC3339),
+		}},
+	}
 }

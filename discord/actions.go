@@ -3,6 +3,7 @@ package discord
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -13,12 +14,12 @@ import (
 	"strings"
 )
 
-func TriggerWebhook(triggerType string, hash string) {
-	prefix := os.Getenv("QBIT_BASE") + "/api/v2"
-	authURL := prefix + "/auth/login"
-	propsURL := prefix + "/torrents/properties"
-	webhookURL := "https://discord.com/api/webhooks/" + os.Getenv("WEBHOOK_ID") + "/" + os.Getenv("WEBHOOK_TOKEN")
+var cookieJar, _ = cookiejar.New(nil)
+var client = &http.Client{
+	Jar: cookieJar,
+}
 
+func TriggerWebhook(triggerType string, hash string) {
 	loginForm := url.Values{}
 	loginForm.Set("username", os.Getenv("QBIT_USERNAME"))
 	loginForm.Set("password", os.Getenv("QBIT_PASSWORD"))
@@ -26,12 +27,11 @@ func TriggerWebhook(triggerType string, hash string) {
 	// Encode the form data as URL-encoded form data
 	body := strings.NewReader(loginForm.Encode())
 
-	// Send the login request using the HTTP client
-	cookieJar, _ := cookiejar.New(nil)
-	client := &http.Client{
-		Jar: cookieJar,
-	}
+	var prefix = os.Getenv("QBIT_BASE") + "/api/v2"
+	var authURL = prefix + "/auth/login"
+	var propsURL = prefix + "/torrents/properties"
 
+	// Send the login request using the HTTP client
 	rLogin, err := http.NewRequest(http.MethodPost, authURL, body)
 	if err != nil {
 		panic(err)
@@ -44,7 +44,7 @@ func TriggerWebhook(triggerType string, hash string) {
 	defer func(Body io.ReadCloser) {
 		err := Body.Close()
 		if err != nil {
-			//TODO
+			panic(err)
 		}
 	}(resp.Body)
 
@@ -60,7 +60,7 @@ func TriggerWebhook(triggerType string, hash string) {
 		// Print the request body to the console
 		fmt.Println(string(body))
 	} else {
-		panic("Login failed.")
+		panic(errors.New("login failed"))
 	}
 
 	propsForm := url.Values{}
@@ -78,12 +78,12 @@ func TriggerWebhook(triggerType string, hash string) {
 	defer func(Body io.ReadCloser) {
 		err := Body.Close()
 		if err != nil {
-			//TODO
+			panic(err)
 		}
 	}(resp.Body)
 
 	if resp.StatusCode != http.StatusOK {
-		panic(fmt.Sprintf("Request unsuccessful with status: %d", resp.StatusCode))
+		panic(errors.New(fmt.Sprintf("request unsuccessful with status: %d", resp.StatusCode)))
 	}
 
 	var torrentProps qbit.TorrentProps
@@ -99,18 +99,24 @@ func TriggerWebhook(triggerType string, hash string) {
 		payload = GenerateCompletedEmbed(torrentProps)
 	}
 
+	SendWebhook(payload)
+}
+
+func SendWebhook(payload WebhookPayload) {
+	var webhookURL = "https://discord.com/api/webhooks/" + os.Getenv("WEBHOOK_ID") + "/" + os.Getenv("WEBHOOK_TOKEN")
+
 	reqBodyBytes, _ := json.Marshal(payload)
 	req, _ := http.NewRequest(http.MethodPost, webhookURL, bytes.NewBuffer(reqBodyBytes))
 	req.Header.Set("Content-Type", "application/json")
 
-	resp, err = client.Do(req)
+	resp, err := client.Do(req)
 	if err != nil {
 		panic(err)
 	}
 	defer func(Body io.ReadCloser) {
 		err := Body.Close()
 		if err != nil {
-			//TODO
+			//TODO: Add logger when unable to send payload to Discord
 		}
 	}(resp.Body)
 }
