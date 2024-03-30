@@ -13,7 +13,6 @@ func GenerateAddedEmbed(torrentProps qbit.TorrentProps) WebhookPayload {
 				Title:       "New torrent added",
 				Description: torrentProps.Name,
 				Color:       0xFF0000,
-				URL:         torrentProps.Comment,
 				Fields: []Field{
 					{
 						Name:   "Total Size",
@@ -37,7 +36,6 @@ func GenerateCompletedEmbed(torrentProps qbit.TorrentProps) WebhookPayload {
 				Title:       "Torrent completed",
 				Description: torrentProps.Name,
 				Color:       0x00FF00,
-				URL:         torrentProps.Comment,
 				Fields: []Field{
 					{
 						Name:   "Total Size",

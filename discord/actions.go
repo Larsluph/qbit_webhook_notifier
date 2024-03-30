@@ -49,9 +49,8 @@ func TriggerWebhook(triggerType string, hash string) {
 		}
 	}(resp.Body)
 
+	fmt.Println("Login status code:", resp.StatusCode)
 	if resp.StatusCode == http.StatusOK {
-		fmt.Println("Login success!")
-
 		// Read the request body
 		body, err := io.ReadAll(rLogin.Body)
 		if err != nil {
@@ -59,7 +58,7 @@ func TriggerWebhook(triggerType string, hash string) {
 		}
 
 		// Print the request body to the console
-		fmt.Println(string(body))
+		fmt.Println("Login body:", string(body))
 	} else {
 		panic(errors.New("login failed"))
 	}
@@ -83,6 +82,7 @@ func TriggerWebhook(triggerType string, hash string) {
 		}
 	}(resp.Body)
 
+	fmt.Println("Torrent props status code:", resp.StatusCode)
 	if resp.StatusCode != http.StatusOK {
 		panic(errors.New(fmt.Sprintf("request unsuccessful with status: %d", resp.StatusCode)))
 	}
@@ -114,6 +114,7 @@ func SendWebhook(payload WebhookPayload) {
 	if err != nil {
 		log.Fatal(err)
 	}
+	fmt.Println("Webhook status code:", resp.StatusCode)
 	defer func(Body io.ReadCloser) {
 		err := Body.Close()
 		if err != nil {
