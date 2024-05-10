@@ -2,6 +2,7 @@ package discord
 
 import (
 	"bytes"
+	"crypto/tls"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -18,6 +19,9 @@ import (
 var cookieJar, _ = cookiejar.New(nil)
 var client = &http.Client{
 	Jar: cookieJar,
+	Transport: &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	},
 }
 
 func TriggerWebhook(triggerType string, hash string) {
