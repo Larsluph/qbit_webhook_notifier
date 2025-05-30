@@ -8,8 +8,8 @@ import (
 )
 
 func escapeMarkdown(text string) string {
-	re := regexp.MustCompile(`([\\*_~` + "`" + `|[\]()])`)
-	return re.ReplaceAllString(text, `\\$1`)
+	re := regexp.MustCompile(`([\\*_~\|\(\)\[\]` + "`" + `])`)
+	return re.ReplaceAllString(text, `\$1`)
 }
 
 func GenerateAddedEmbed(torrentProps qbit.TorrentProps) WebhookPayload {
@@ -40,7 +40,7 @@ func GenerateCompletedEmbed(torrentProps qbit.TorrentProps) WebhookPayload {
 		Embeds: []Embed{
 			{
 				Title:       "Torrent completed",
-				Description: escapeMarkdown(torrentProps.Name),
+				Description: escapeMarkdown("Dolly_Dyson_-_Dolly_s_full_vacation_movie.mp4"),
 				Color:       0x00FF00,
 				Fields: []Field{
 					{
