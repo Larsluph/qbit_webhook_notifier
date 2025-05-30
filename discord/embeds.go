@@ -40,7 +40,7 @@ func GenerateCompletedEmbed(torrentProps qbit.TorrentProps) WebhookPayload {
 		Embeds: []Embed{
 			{
 				Title:       "Torrent completed",
-				Description: escapeMarkdown("Dolly_Dyson_-_Dolly_s_full_vacation_movie.mp4"),
+				Description: escapeMarkdown(torrentProps.Name),
 				Color:       0x00FF00,
 				Fields: []Field{
 					{
