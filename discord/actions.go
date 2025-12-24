@@ -28,7 +28,7 @@ func TriggerWebhook(triggerType string, hash string) {
 }
 
 func SendWebhook(payload WebhookPayload) {
-	var webhookURL = "https://discord.com/api/webhooks/" + os.Getenv("WEBHOOK_ID") + "/" + os.Getenv("WEBHOOK_TOKEN")
+	var webhookURL = os.Getenv("WEBHOOK_URL")
 
 	reqBodyBytes, _ := json.Marshal(payload)
 	req, _ := http.NewRequest(http.MethodPost, webhookURL, bytes.NewBuffer(reqBodyBytes))
